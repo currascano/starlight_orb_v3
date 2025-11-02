@@ -1,35 +1,81 @@
 <!doctype html>
 <html lang="en">
-  <style>
-    /* Critical orb styles (inline fallback) */
-:root{
-  --text:#eaf7ff; --accent:#18e0ff; --mia:#9cdcff; --brian:#49ee9a;
-}
-body{background:#05070b;color:var(--text);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;text-align:center}
-.container{max-width:900px;margin:0 auto;padding:32px 16px}
-#orb{width:360px;height:360px;margin:18px auto 8px;position:relative;filter:drop-shadow(0 0 32px rgba(24,224,255,.35))}
-#orb.mia{--ring: var(--mia)} #orb.brian{--ring: var(--brian)}
-#orb .ring{
-  position:absolute;inset:0;border-radius:50%;
-  border:2px solid rgba(24,224,255,.35);
-  border-color: color-mix(in oklab, var(--ring) 70%, transparent);
-  box-shadow:0 0 40px color-mix(in oklab, var(--ring) 35%, transparent) inset,
-             0 0 60px color-mix(in oklab, var(--ring) 35%, transparent);
-  animation:breath 4s ease-in-out infinite;
-}
-#orb .ring:nth-child(2){ inset:10%; animation-delay:.2s; opacity:.8 }
-#orb .ring:nth-child(3){ inset:20%; animation-delay:.4s; opacity:.7 }
-#orb.talking .ring{ animation:talk .6s ease-in-out infinite }
-@keyframes breath{0%,100%{transform:scale(.98)}50%{transform:scale(1.02)}}
-@keyframes talk{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
-</style>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>S.T.A.R.L.I.G.H.T.</title>
+
+  <!-- Manifest file (make sure your repo has manifest.json) -->
   <link rel="manifest" href="manifest.json">
+
+  <!-- Core orb glow styles -->
+  <style>
+    :root{
+      --text:#eaf7ff;
+      --accent:#18e0ff;
+      --mia:#9cdcff;   /* Blue/white */
+      --brian:#49ee9a; /* Green/white */
+    }
+
+    body{
+      background:#05070b;
+      color:var(--text);
+      font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      margin:0;
+      text-align:center;
+    }
+
+    .container{
+      max-width:900px;
+      margin:0 auto;
+      padding:32px 16px;
+    }
+
+    #orb{
+      width:360px;
+      height:360px;
+      margin:18px auto 8px;
+      position:relative;
+      filter:drop-shadow(0 0 32px rgba(24,224,255,.35));
+    }
+
+    #orb.mia{ --ring: var(--mia); }
+    #orb.brian{ --ring: var(--brian); }
+
+    #orb .ring{
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      border:2px solid rgba(24,224,255,.35);
+      border-color: color-mix(in oklab, var(--ring) 70%, transparent);
+      box-shadow:
+        0 0 40px color-mix(in oklab, var(--ring) 35%, transparent) inset,
+        0 0 60px color-mix(in oklab, var(--ring) 35%, transparent);
+      animation:breath 4s ease-in-out infinite;
+    }
+
+    #orb .ring:nth-child(2){ inset:10%; animation-delay:.2s; opacity:.8 }
+    #orb .ring:nth-child(3){ inset:20%; animation-delay:.4s; opacity:.7 }
+
+    #orb.talking .ring{
+      animation:talk .6s ease-in-out infinite;
+    }
+
+    @keyframes breath{
+      0%,100%{transform:scale(.98)}
+      50%{transform:scale(1.02)}
+    }
+
+    @keyframes talk{
+      0%{transform:scale(1)}
+      50%{transform:scale(1.06)}
+      100%{transform:scale(1)}
+    }
+  </style>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <main class="container">
     <h1>S.T.A.R.L.I.G.H.T.</h1>
@@ -44,7 +90,9 @@ body{background:#05070b;color:var(--text);font-family:system-ui,Segoe UI,Roboto,
     <div id="bioBRIAN" class="bio">BRIAN — Analytical, diagnostics-focused support.</div>
 
     <div id="orb" class="mia">
-      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
     </div>
 
     <div id="countdown">Ready.</div>
@@ -67,6 +115,7 @@ body{background:#05070b;color:var(--text);font-family:system-ui,Segoe UI,Roboto,
     </div>
   </main>
 
-  <script src="app.js?v=1001"></script>
+  <!-- Force browser to load latest JS -->
+  <script src="app.js?v=3002"></script>
 </body>
 </html>
