@@ -1,5 +1,3 @@
-// ST★RLIGHT v3 — replace with full script later
-console.log('loaded');
 // ==========================
 // ST★RLIGHT ORB — V3
 // Voice AI + Timer + Orb Glow
