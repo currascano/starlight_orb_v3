@@ -1,24 +1,22 @@
-// ==========================
-// ST★RLIGHT ORB — V3
-// Voice AI + Timer + Orb Glow
-// ==========================
+// ---- One-time cache reset (avoid old SW/JS) ----
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations?.().then(rs => rs.forEach(r => r.unregister()));
+  caches?.keys?.().then(keys => keys.forEach(k => caches.delete(k)));
+}
 
-// ===== State =====
+// ===== ST★RLIGHT ORB V3 =====
 let currentAI = "MIA";
 let userName = localStorage.getItem("userName") || null;
-let timerId = null;
 
-// Elements
 const orb = document.getElementById("orb");
 const aiLabel = document.getElementById("aiLabel");
 const secondsInput = document.getElementById("seconds");
 const countdownEl = document.getElementById("countdown");
 const presetMenu = document.getElementById("presetMenu");
+let timerId = null;
 
-// ===== Voice System =====
+// ===== Robust voice loading =====
 let VOICES = [];
-let audioReady = false;
-
 function loadVoicesOnce() {
   return new Promise(resolve => {
     const load = () => {
@@ -39,13 +37,13 @@ function loadVoicesOnce() {
   });
 }
 
-const MIA_PREF = ["Aria","Jenny","Samantha","Google UK English Female","Victoria"];
+const MIA_PREF   = ["Aria","Jenny","Samantha","Google UK English Female","Victoria","Karen"];
 const BRIAN_PREF = ["Guy","Christopher","Daniel","Google UK English Male","Tom"];
 
 function pickVoice(list) {
   if (!VOICES.length) return null;
   for (const n of list) {
-    const v = VOICES.find(v => v.name === n) || VOICES.find(v => v.name.includes(n));
+    const v = VOICES.find(v => v.name === n) || VOICES.find(v => v.name?.includes(n));
     if (v) return v;
   }
   return VOICES.find(v => /en-/i.test(v.lang)) || VOICES[0];
@@ -53,53 +51,42 @@ function pickVoice(list) {
 
 function speak(ai, text) {
   const u = new SpeechSynthesisUtterance(text);
-
-  if (ai === "MIA") {
-    u.voice = pickVoice(MIA_PREF);
-    u.pitch = 1.15;
-    u.rate = .97;
-  } else {
-    u.voice = pickVoice(BRIAN_PREF);
-    u.pitch = .95;
-    u.rate = 1.03;
-  }
-
+  if (ai === "MIA") { u.voice = pickVoice(MIA_PREF);   u.pitch = 1.15; u.rate = 0.98; }
+  else              { u.voice = pickVoice(BRIAN_PREF); u.pitch = 0.95; u.rate = 1.04; }
   u.onstart = () => orb.classList.add("talking");
   u.onend   = () => orb.classList.remove("talking");
   speechSynthesis.speak(u);
 }
 
+// Unlock audio and greet (requires a user gesture on most browsers)
+let audioReady = false;
 async function primeAudio() {
   if (audioReady) return;
   audioReady = true;
   await loadVoicesOnce();
-
   if (!userName) {
-    userName = prompt("What shall I call you?") || "Operator";
+    userName = prompt("Welcome. What shall I call you?") || "Operator";
     localStorage.setItem("userName", userName);
   }
-
-  speak("MIA", `Starlight systems online, ${userName}.`);
+  // Greet immediately WITH the saved/entered name
+  speak("MIA", `Hello ${userName}. Starlight systems online.`);
 }
-
 window.addEventListener("pointerdown", primeAudio, { once:true });
-window.addEventListener("keydown", primeAudio, { once:true });
+window.addEventListener("keydown",     primeAudio, { once:true });
 
-// ===== AI Switch =====
+// Assistant switch (MIA = blue/white, BRIAN = green/white)
 document.querySelectorAll(".chip").forEach(btn => {
   btn.onclick = () => {
+    document.querySelectorAll(".chip").forEach(x => x.classList.remove("active"));
+    btn.classList.add("active");
     currentAI = btn.dataset.ai;
     aiLabel.textContent = `Selected: ${currentAI}`;
-
-    document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-    btn.classList.add("active");
-
     orb.className = currentAI === "MIA" ? "mia" : "brian";
-    speak(currentAI, `Ready, ${userName}.`);
+    speak(currentAI, `Ready, ${userName || "Operator"}.`);
   };
 });
 
-// ===== Presets =====
+// Presets
 const presets = {
   "Meditation (5m)": 300,
   "Water Break (2m)": 120,
@@ -107,33 +94,29 @@ const presets = {
   "Brush Teeth (2m)": 120,
   "Cool Down (3m)": 180
 };
-
-Object.entries(presets).forEach(([name, secs]) => {
+Object.entries(presets).forEach(([label, secs]) => {
   const o = document.createElement("option");
-  o.value = secs;
-  o.textContent = name;
+  o.value = secs; o.textContent = label;
   presetMenu.appendChild(o);
 });
-
 presetMenu.onchange = () => {
-  secondsInput.value = presetMenu.value;
-  speak(currentAI, `Preset set: ${presetMenu.options[presetMenu.selectedIndex].text}`);
+  const v = parseInt(presetMenu.value||"0",10);
+  if (v > 0) {
+    secondsInput.value = v;
+    speak(currentAI, `Preset set: ${presetMenu.options[presetMenu.selectedIndex].text}`);
+  }
 };
 
-// ===== Timer =====
+// Timer
 document.getElementById("startBtn").onclick = () => {
-  let t = parseInt(secondsInput.value) || 600;
-  speak(currentAI, `Starting ${Math.floor(t/60)} minute session, ${userName}.`);
-
+  let t = Math.max(1, parseInt(secondsInput.value || "600", 10));
+  speak(currentAI, `Starting ${Math.floor(t/60)} minute session, ${userName || "Operator"}.`);
   clearInterval(timerId);
   function tick() {
-    countdownEl.textContent = t > 0
-      ? `${Math.floor(t/60)}m ${t%60}s`
-      : "Complete";
-
+    countdownEl.textContent = t > 0 ? `${Math.floor(t/60)}m ${t%60}s` : "Complete";
     if (t <= 0) {
       clearInterval(timerId);
-      speak(currentAI, `Session complete. Excellent work, ${userName}.`);
+      speak(currentAI, `Session complete. Excellent work, ${userName || "Operator"}.`);
     }
     t--;
   }
@@ -144,7 +127,7 @@ document.getElementById("startBtn").onclick = () => {
 document.getElementById("stopBtn").onclick = () => {
   clearInterval(timerId);
   countdownEl.textContent = "Stopped.";
-  speak(currentAI, `Timer stopped, ${userName}.`);
+  speak(currentAI, `Timer stopped, ${userName || "Operator"}.`);
 };
 
 console.log("%cST★RLIGHT ORB v3 loaded","color:#8ff");
