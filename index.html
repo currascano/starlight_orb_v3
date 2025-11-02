@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>S.T.A.R.L.I.G.H.T.</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>S.T.A.R.L.I.G.H.T.</h1>
+
+    <div id="aiSwitcher">
+      <button class="chip active" data-ai="MIA">MIA</button>
+      <button class="chip" data-ai="BRIAN">BRIAN</button>
+      <div id="aiLabel">Selected: MIA</div>
+    </div>
+
+    <div id="bioMIA" class="bio show">MIA — Elegant, calm, logic-forward guidance.</div>
+    <div id="bioBRIAN" class="bio">BRIAN — Analytical, diagnostics-focused support.</div>
+
+    <div id="orb" class="mia">
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    </div>
+
+    <div id="countdown">Ready.</div>
+
+    <div class="row">
+      <input id="seconds" type="number" min="1" value="600" />
+      <button id="startBtn">Start</button>
+      <button id="stopBtn">Stop</button>
+    </div>
+
+    <label for="presetMenu">Presets:</label>
+    <select id="presetMenu">
+      <option value="0" selected>Choose a preset…</option>
+    </select>
+
+    <div class="pillbar">
+      <button class="pill" data-seconds="120">🪥 Brush Teeth (2m)</button>
+      <button class="pill" data-seconds="300">🧘 Meditation (5m)</button>
+      <button class="pill" data-seconds="1500">🎓 Study (25m)</button>
+    </div>
+  </main>
+
+  <script src="app.js?v=1001"></script>
+</body>
+</html>
